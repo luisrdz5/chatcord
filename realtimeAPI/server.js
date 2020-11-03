@@ -3,6 +3,8 @@ const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const formatMessage = require('./utils/messages');
+const client = require('./libs/celery');
+
 const {
   userJoin,
   getCurrentUser,
@@ -17,7 +19,7 @@ const io = socketio(server);
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-const botName = 'ChatCord Bot';
+const botName = 'Platzi-Message Bot';
 
 // Run when client connects
 io.on('connection', socket => {
@@ -27,7 +29,7 @@ io.on('connection', socket => {
     socket.join(user.room);
 
     // Welcome current user
-    socket.emit('message', formatMessage(botName, 'Welcome to ChatCord!'));
+    socket.emit('message', formatMessage(botName, 'Welcome to Platzi Message!'));
 
     // Broadcast when a user connects
     socket.broadcast
@@ -44,10 +46,12 @@ io.on('connection', socket => {
     });
   });
 
-  // Listen for chatMessage
+  // Listen for Message
   socket.on('chatMessage', msg => {
     const user = getCurrentUser(socket.id);
-
+    const task = client.createTask('tasks.showMessage');
+    //const task = client.createTask('tasks.insertMessage');
+    const { taskId } = task.applyAsync([null, user.username, user.room, msg]);
     io.to(user.room).emit('message', formatMessage(user.username, msg));
   });
 
