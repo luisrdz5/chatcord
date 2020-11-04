@@ -49,8 +49,8 @@ io.on('connection', socket => {
   // Listen for Message
   socket.on('chatMessage', msg => {
     const user = getCurrentUser(socket.id);
-    const task = client.createTask('tasks.showMessage');
-    //const task = client.createTask('tasks.insertMessage');
+    //const task = client.createTask('tasks.showMessage');
+    const task = client.createTask('tasks.insertMessage');
     const { taskId } = task.applyAsync([null, user.username, user.room, msg]);
     io.to(user.room).emit('message', formatMessage(user.username, msg));
   });
