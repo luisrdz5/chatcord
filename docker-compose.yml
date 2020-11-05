@@ -30,20 +30,20 @@ services:
     restart: always
     ports:
       - 80:80
-#  api:
-#    build:
-#      context: ./realtimeAPI
-#      dockerfile: Dockerfile
-#    ports:
-#      - '2000:2000'
-#    depends_on:
-#      - redis
-#      - celery
-#    volumes:
-#      - ./realtimeAPI:/var/www
-#    working_dir: /var/www
-#    restart: always
-#    command: /bin/sh -c "npm install && npm run start"
-#    environment:
-#      - PORT=2000
-#      - REDIS_SERVER=redis
+  api:
+    build:
+      context: ./realtimeAPI
+      dockerfile: Dockerfile
+    ports:
+      - '2000:2000'
+    depends_on:
+      - redis
+      - celery
+    volumes:
+      - ./realtimeAPI:/var/www
+    working_dir: /var/www
+    restart: always
+    command: /bin/sh -c "npm install && npm run start"
+    environment:
+      - PORT=2000
+      - REDIS_SERVER=redis
