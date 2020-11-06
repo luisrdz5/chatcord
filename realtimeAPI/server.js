@@ -7,7 +7,7 @@ const celery = require('celery-node');
 
 const redisserver = process.env.REDIS_SERVER || '127.0.0.1';
 const brokerUrl = `redis://${redisserver}:6379/0`;
-const backend = 'redis://';
+const backend = `redis://${redisserver}`;
 console.log(brokerUrl);
 const client = celery.createClient(brokerUrl, backend);
 
@@ -56,8 +56,12 @@ io.on('connection', socket => {
   socket.on('chatMessage', msg => {
     const user = getCurrentUser(socket.id);
     //const task = client.createTask('tasks.showMessage');
-    const task = client.createTask('tasks.insertMessage');
-    const { taskId } = task.applyAsync([null, user.username, user.room, msg]);
+    try {
+      const task = client.createTask('tasks.insertMessage');
+      const { taskId } = task.applyAsync([null, user.username, user.room, msg]);
+    } catch (error) {
+      console.log(error);
+    }
     io.to(user.room).emit('message', formatMessage(user.username, msg));
   });
 
